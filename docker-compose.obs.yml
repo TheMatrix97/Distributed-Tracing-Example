@@ -19,12 +19,12 @@ services:
     image: otel/opentelemetry-collector:latest
     command: '--config /etc/otel-config.yaml'
     volumes:
-      - ./otel-config.yaml:/etc/otel-config.yaml
+      - ./obs/otel-config.yaml:/etc/otel-config.yaml
     networks:
       - kennels_net
   # Stack Obs
   grafana:
-    build: ./grafana
+    build: ./obs/grafana
     restart: unless-stopped
     ports:
       - 3000:3000
@@ -46,7 +46,7 @@ services:
     image: grafana/tempo:latest
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./tempo/tempo.yaml:/etc/tempo.yaml
+      - ./obs/tempo.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo
     ports:
       - "14268:14268"  # jaeger ingest
@@ -61,7 +61,7 @@ services:
     image: prom/prometheus:v2.34.0
     restart: unless-stopped
     volumes:
-      - ./prometheus/:/etc/prometheus/
+      - ./obs/prometheus.yaml:/etc/prometheus/prometheus.yaml
     ports:
       - "9090:9090"
     command:
