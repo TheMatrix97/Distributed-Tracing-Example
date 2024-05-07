@@ -20,17 +20,35 @@ services:
     build: ./services/dogs
     environment:
      - OTEL_SERVICE_NAME=dogs
+     - OTEL_TRACES_EXPORTER=otlp
+     - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4317
+     - OTEL_NODE_RESOURCE_DETECTORS=env,host,os
+     - OTEL_EXPORTER_OTLP_PROTOCOL=grpc 
+     - OTEL_EXPORTER_OTLP_INSECURE=true
+     #- NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
     networks:
       - net
   inventory:
     build: ./services/inventory
     environment:
      - OTEL_SERVICE_NAME=inventory
+     - OTEL_TRACES_EXPORTER=otlp
+     - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4317
+     - OTEL_NODE_RESOURCE_DETECTORS=env,host,os
+     - OTEL_EXPORTER_OTLP_PROTOCOL=grpc 
+     - OTEL_EXPORTER_OTLP_INSECURE=true
+     #- NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
     networks:
       - net
   kennels:
     build: ./services/kennels
     environment:
      - OTEL_SERVICE_NAME=kennels
+     - OTEL_TRACES_EXPORTER=otlp
+     - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4317
+     - OTEL_NODE_RESOURCE_DETECTORS=env,host,os
+     - OTEL_EXPORTER_OTLP_PROTOCOL=grpc 
+     - OTEL_EXPORTER_OTLP_INSECURE=true
+     #- NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
     networks:
       - net
