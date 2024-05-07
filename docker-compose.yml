@@ -1,5 +1,9 @@
 version: '3.1'
 
+networks:
+  net:
+    driver: bridge
+
 services:
   nginx:
     image: nginx:latest
@@ -9,16 +13,24 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - kennels
-  #collector:
-  #  image: otel/opentelemetry-collector:0.23.0
-  #  command: '--config /etc/otel-config.yaml'
-  #  volumes:
-  #    - ./otel-config.yaml:/etc/otel-config.yaml
-  #  ports:
-  #    - 6831:6831
+    networks:
+      - net
+  
   dogs:
     build: ./services/dogs
+    environment:
+     - OTEL_SERVICE_NAME=dogs
+    networks:
+      - net
   inventory:
     build: ./services/inventory
+    environment:
+     - OTEL_SERVICE_NAME=inventory
+    networks:
+      - net
   kennels:
     build: ./services/kennels
+    environment:
+     - OTEL_SERVICE_NAME=kennels
+    networks:
+      - net

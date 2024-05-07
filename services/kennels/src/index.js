@@ -1,24 +1,10 @@
 const express = require('express');
-//const opentracing = require('opentracing');
 const data = require('./data');
-//const { createTracer } = require('./tracer');
-
-/*const tracer = createTracer(
-  'kennels-service',
-  'http://collector:14268/api/traces'
-);*/
-
 const app = express();
 
 app.use('/', async (req, res) => {
-  //const parent = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, req.headers);
-  //const span = tracer.startSpan('kennels.process-request', { childOf: parent });
-  //TODO REMOVE
-  const span = null;
-  const tracer = null;
-
   const id = req.query.id;
-  const name = await data.getKennelName(id, span, tracer);
+  const name = await data.getKennelName(id);
 
   if (!name) {
     res.status(404);
@@ -27,11 +13,11 @@ app.use('/', async (req, res) => {
     return;
   }
 
-  const inventory = await data.getInventory(id, span, tracer);
+  const inventory = await data.getInventory(id);
 
   let dogs = await Promise.all(
     inventory.map(async (x) => {
-      const name = await data.getDogDetails(x, span, tracer);
+      const name = await data.getDogDetails(x);
       return {
         id: x,
         name,
