@@ -1,8 +1,8 @@
 version: '3.1'
 
 networks:
-  net:
-    driver: bridge
+  kennels_net:
+    external: true
 
 services:
   nginx:
@@ -14,8 +14,7 @@ services:
     depends_on:
       - kennels
     networks:
-      - net
-  
+      - kennels_net
   dogs:
     build: ./services/dogs
     environment:
@@ -27,7 +26,7 @@ services:
      - OTEL_EXPORTER_OTLP_INSECURE=true
      #- NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
     networks:
-      - net
+      - kennels_net
   inventory:
     build: ./services/inventory
     environment:
@@ -39,7 +38,7 @@ services:
      - OTEL_EXPORTER_OTLP_INSECURE=true
      #- NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
     networks:
-      - net
+      - kennels_net
   kennels:
     build: ./services/kennels
     environment:
@@ -51,4 +50,4 @@ services:
      - OTEL_EXPORTER_OTLP_INSECURE=true
      #- NODE_OPTIONS="--require @opentelemetry/auto-instrumentations-node/register"
     networks:
-      - net
+      - kennels_net
