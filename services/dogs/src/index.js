@@ -5,6 +5,12 @@ const app = express();
 
 app.use('/', async (req, res) => {
   const id = req.query.id;
+  const randomNumber = Math.random();
+  if (randomNumber < 0.7) {
+    // Simulate a random error 50% of the time
+    res.status(500).send('Internal Server Error');
+    return;
+  }
   const name = await getDogName(id);
   res.send(name);
 });
