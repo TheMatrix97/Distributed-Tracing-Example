@@ -1,8 +1,8 @@
 version: '3.1'
 
 networks:
-  net:
-    driver: bridge
+  kennels_net:
+    external: true
 
 services:
   nginx:
@@ -14,23 +14,23 @@ services:
     depends_on:
       - kennels
     networks:
-      - net
+      - kennels_net
   
   dogs:
     build: ./services/dogs
     environment:
      - OTEL_SERVICE_NAME=dogs
     networks:
-      - net
+      - kennels_net
   inventory:
     build: ./services/inventory
     environment:
      - OTEL_SERVICE_NAME=inventory
     networks:
-      - net
+      - kennels_net
   kennels:
     build: ./services/kennels
     environment:
      - OTEL_SERVICE_NAME=kennels
     networks:
-      - net
+      - kennels_net
