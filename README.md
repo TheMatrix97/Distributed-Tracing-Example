@@ -32,8 +32,7 @@ sed -i 's/node src\/index.js/node --require @opentelemetry\/auto-instrumentation
 environment:
 - OTEL_SERVICE_NAME=<NAME_SERVICE>
 - OTEL_TRACES_EXPORTER=otlp
-- OTEL_EXPORTER_OTLP_ENDPOINT=collector:4317
-- OTEL_NODE_RESOURCE_DETECTORS=env,host,os
+- OTEL_EXPORTER_OTLP_ENDPOINT=alloy:4317
 - OTEL_EXPORTER_OTLP_PROTOCOL=grpc 
 - OTEL_EXPORTER_OTLP_INSECURE=true
 ```
@@ -42,4 +41,12 @@ environment:
 
 ```bash
 docker compose up -d --force-recreate --build
+```
+
+## Load testing
+
+Run the load test with k6 and Docker:
+
+```bash
+docker run -it --rm -v $PWD/obs/load_test.js:/scripts/load_test.js --network kennels_net  grafana/k6:latest run /scripts/load_test.js
 ```

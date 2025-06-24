@@ -1,3 +1,4 @@
+name: kennels_stack
 volumes:
   grafana_data: {}
   tempo_data: {}
@@ -6,25 +7,21 @@ networks:
   kennels_net:
     external: true
 
-services:
-  k6:
-    image: grafana/k6:latest
+services:  
+  alloy:
+    image: grafana/alloy:v1.9.1
     volumes:
-      - ./obs/k6/load_test.js:/scripts/load_test.js
-    command: ["run", "/scripts/load_test.js"]
+      - ./obs/config.alloy:/etc/alloy/config.alloy
+    command:
+    - run
+    - /etc/alloy/config.alloy
+    - --server.http.listen-addr=0.0.0.0:12345
+    ports:
+      - 12345:12345
     networks:
       - kennels_net
-  
-  collector: # Exposes 4317 (grpc) and 4318 (http)
-    image: otel/opentelemetry-collector:latest
-    command: '--config /etc/otel-config.yaml'
-    volumes:
-      - ./obs/otel-config.yaml:/etc/otel-config.yaml
-    networks:
-      - kennels_net
-  # Stack Obs
   grafana:
-    image: grafana/grafana:10.4.2
+    image: grafana/grafana:12.0.2
     restart: unless-stopped
     ports:
       - 3000:3000
@@ -37,32 +34,21 @@ services:
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor traceQLStreaming metricsSummary
     networks:
       - kennels_net
-  
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:2.8.1
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./obs/tempo.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo
-    ports:
-      - "14268:14268"  # jaeger ingest
-      - "3200:3200"   # tempo
-      - "9095:9095" # tempo grpc
-      - "4317:4317"  # otlp grpc
-      - "4318:4318"  # otlp http
-      - "9411:9411"   # zipkin
     networks:
       - kennels_net
   prometheus:
-    image: prom/prometheus:v2.34.0
+    image: prom/prometheus:v3.4.1
     restart: unless-stopped
-    volumes:
-      - ./obs/prometheus.yaml:/etc/prometheus/prometheus.yaml
-    ports:
-      - "9090:9090"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
-      - "--enable-feature=remote-write-receiver"
+      - "--web.enable-remote-write-receiver"
+      - "--enable-feature=exemplar-storage"
     networks:
       - kennels_net
